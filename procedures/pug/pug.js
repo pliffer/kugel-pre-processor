@@ -16,7 +16,7 @@ function renderPug(filePath){
 
         fs.writeFile(outPath, result, function(err){
 
-            console.log('Rendered ' + outPath);
+            if(process.env.VERBOSE) console.log('Rendered ' + outPath);
 
             if(err) return console.log(err);
 
@@ -26,7 +26,12 @@ function renderPug(filePath){
 
 }
 
-module.exports = (folder, filter) => {
+module.exports = (folder) => {
+
+    let filter = () => true;
+
+    if(folder.filter) filter = folder.filter;
+    if(folder.src) folder = folder.src;
 
     Util.tree(folder, (err, files) => {
 
@@ -34,9 +39,7 @@ module.exports = (folder, filter) => {
 
         files.forEach(file => {
 
-            if(filter && filter(file) == false) return;
-
-            renderPug(file);
+            if(filter(file)) renderPug(file);
 
         });
 
@@ -46,9 +49,7 @@ module.exports = (folder, filter) => {
         persistent: true
     }).on('change', file => {
 
-        if(filter && filter(file) == false) return;
-
-        renderPug(file);
+        if(filter(file)) renderPug(file);
 
     });
 

@@ -1,10 +1,8 @@
 const chokidar = require('chokidar');
-const sass = require('node-sass');
-const fs = require('fs');
+const sass     = require('sass');
+const fs       = require('fs');
 
 const Util = require('../../util.js');
-
-// @todo Implementar filter
 
 function renderSASS(filePath){
 
@@ -21,7 +19,7 @@ function renderSASS(filePath){
 
             fs.writeFile(outPath, result.css, function(err){
 
-                console.log('Rendered ' + outPath);
+                if(process.env.VERBOSE) console.log('Rendered ' + outPath);
 
                 if(err) return console.log(err);
 
@@ -35,7 +33,10 @@ function renderSASS(filePath){
 
 module.exports = (folder) => {
 
-    console.log('SASS pre-processor', folder)
+    let filter = () => true;
+
+    if(folder.filter) filter = folder.filter;
+    if(folder.src) folder = folder.src;
 
     Util.tree(folder, (err, files) => {
 
@@ -43,9 +44,7 @@ module.exports = (folder) => {
 
         files.forEach(file => {
 
-            console.log(file);
-
-            renderSASS(file);
+            if(filter(file)) renderSASS(file);
 
         });
 
@@ -53,6 +52,10 @@ module.exports = (folder) => {
 
     chokidar.watch(folder, {
         persistent: true
-    }).on('change', renderSASS);
+    }).on('change', (file) => {
+        
+        if(filter(file)) renderSASS(file);
+
+    });
 
 }

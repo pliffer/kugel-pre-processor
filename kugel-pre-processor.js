@@ -1,10 +1,17 @@
-let kugel    = require('kugel');
-let chokidar = require('chokidar');
+const kugel = require('kugel');
+const fs    = require('fs');
+const path  = require('path');
 
 const Component = kugel.Component;
 
-let sassProcedure = require('./procedures/sass/sass.js');
-let pugProcedure  = require('./procedures/pug/pug.js');
+let procedures = fs.readdirSync(path.join(__dirname, 'procedures'));
 
-Component.on('sass-pre-processor', sassProcedure);
-Component.on('pug-pre-processor',  pugProcedure);
+procedures.forEach(folder => {
+
+    if(folder.indexOf('.') !== -1) return;
+
+    let procedure = require('./procedures/' + folder + '/' + folder + '.js');
+
+    Component.on(`${folder}-pre-processor`, procedure);
+
+});
