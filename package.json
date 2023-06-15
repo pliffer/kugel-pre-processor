@@ -1,0 +1,17 @@
+{
+    "name": "kugel-pre-processor",
+    "version": "1.0.0",
+    "description": "Conversor de arquivos que devem ser compilados em tempo de desenvolvimento",
+    "main": "kugel-pre-processor.js",
+    "author": "Pliffer",
+    "license": "ISC",
+    "dependencies": {
+        "chokidar": "^3.5.3",
+        "kugel": "github:pliffer/kugel",
+        "pug": "^3.0.2",
+        "sass": "^1.62.0"
+    },
+    "kugel": {
+        "version": 2
+    }
+}
