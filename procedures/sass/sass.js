@@ -19,7 +19,7 @@ function renderSASS(filePath){
 
             fs.writeFile(outPath, result.css, function(err){
 
-                if(process.env.VERBOSE) console.log('Rendered ' + outPath);
+                if(process.env.VERBOSE == 'true') console.log('Rendered ' + outPath);
 
                 if(err) return console.log(err);
 

@@ -1,17 +1,16 @@
-const kugel = require('kugel');
-const fs    = require('fs');
-const path  = require('path');
+const fs   = require('fs');
+const path = require('path');
 
-const Component = kugel.Component;
+module.exports = {
 
-let procedures = fs.readdirSync(path.join(__dirname, 'procedures'));
+    add(procedure, content){
 
-procedures.forEach(folder => {
+        let procedurePath = path.join(__dirname, 'procedures', procedure, procedure + '.js');
 
-    if(folder.indexOf('.') !== -1) return;
+        if(!fs.existsSync(procedurePath)) return;
 
-    let procedure = require('./procedures/' + folder + '/' + folder + '.js');
+        require(procedurePath)(content);
 
-    Component.on(`${folder}-pre-processor`, procedure);
+    }
 
-});
+}
