@@ -48,6 +48,18 @@ preProcessor.add('pug', {
 });
 ```
 
+3. Assim que o processo rodar, os arquivos serão transformados e salvos no local indicado pela propriedade `.dest` ou no mesmo local do arquivo original caso a propriedade `.dest` não seja definida. O processo rodará sempre que um arquivo for alterado.
+
+## Extensões suportadas
+
+O Kugel Pre Processor atualmente suporta as seguintes extensões:
+
+- .sass
+- .scss
+- .pug
+
+Se você tiver outras extensões que deseja processar, pode seguir as instruções na seção "Criando novas extensões".
+
 ## Criando novas extensões
 
 Para criar uma nova extensão a ser utilizada no Kugel Pre Processor, você deve seguir os passos abaixo:
@@ -61,3 +73,42 @@ Para criar uma nova extensão a ser utilizada no Kugel Pre Processor, você deve
 4. Exporte a função criada no passo 3, para que ela possa ser utilizada pelo Kugel Pre Processor.
 
 5. Adicione a extensão ao Kugel Pre Processor utilizando o método `add`, como indicado na seção "Utilização". O valor de `procedure` deve ser o mesmo nome utilizado na pasta criada no passo 1.
+
+- Certifique-se de que as funções de processamento não causem alterações não intencionais no arquivo original.
+- As funções de processamento devem receber o caminho completo do arquivo como parâmetro e devem retornar o caminho do arquivo processado que deve ser salvo.
+- Todos os arquivos processados devem ser salvos em seus destinos corretos, que podem ser definidos com as funções `.pre` e `.dest`.
+- Para que sua extensão funcione corretamente, é necessário adicionar a extensão com o método `add`, fornecendo o nome da sua extensão e as configurações necessárias.
+
+### Filtrando arquivos com função de filtro personalizada
+
+Se você deseja filtrar arquivos de outra forma que não seja pela sua extensão, pode criar sua própria função de filtro. Para fazer isso, defina uma função que recebe o caminho completo do arquivo como parâmetro e retorna true se o arquivo deve ser processado e false caso contrário. Por exemplo:
+
+```javascript
+const preProcessor = require('kugel-pre-processor');
+// configurações
+
+// processa apenas arquivos com a palavra 'styles' no nome
+preProcessor.add('sass', {
+    src: 'src',
+    filter: (filename) => filename.indexOf('styles') !== -1,
+});
+```
+
+### Definindo o destino de arquivos processados com uma função personalizada
+
+Se você deseja personalizar o destino de um arquivo processado, pode definir uma função `dest` que recebe o caminho completo do arquivo original e retorna o caminho onde o arquivo processado deve ser salvo. Por exemplo:
+
+```javascript
+const preProcessor = require('kugel-pre-processor');
+// configurações
+
+// processa um arquivo .pug na pasta views e salva o arquivo .html na pasta output
+preProcessor.add('pug', {
+    src: 'views',
+    filter: (filename) => filename.indexOf('.pug') !== -1,
+    dest: (filename) => {
+        const basename = path.basename(filename, '.pug');
+        return path.join(__dirname, 'output', basename + '.html');
+    },
+});
+```
